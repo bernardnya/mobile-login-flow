@@ -1,0 +1,255 @@
+setup, same dependecies
+
+2. REGISTRATION PAGE
+    SaveAreaView + style
+        ScrollView incase contents SaveAreaView overflows
+            contentContainerStyle
+
+  create  Title Text 'Register'
+  create description text below title text
+
+  create the input field
+    add View + style + import (conatainer for inpt and btn)
+        create an input component in dir as Input.js
+        make neccessary imports
+            takes in {
+                lable,
+                iconName, 
+                error,
+                password,
+                onFocs={() = }, // unkonwn fnc
+                ...props // rest of the props not mentioned placeholder etc
+            }
+        style view in return
+        import and embed Input in RegisterScreen, pass in the props, lable ...
+    Back to Input.js
+        style lable text.
+    add input field
+        add a view to hold icons and TextInpt + styles
+            add icons name={iconName} dynamic  
+                pass  iconName from RegisterScreen
+            add TextInpt + ...props + styles
+                add some props to TextInpt: autocorrect,onFocus
+
+    we add the border colors, it will change based on the input state
+    error will be red, onFocs blue....
+        so we create a state to keep track of onFocs or not
+            const [isFocused, setIsFocused] = useState(false) || 
+            TextInpt if onFocs then setIsFocused = true
+            Then reset back to false (default)  by onBlur
+
+        add border color to the inputContainer
+            error will show if only there is some error {error &&(....)}
+        add Error field below  inputContainer via Text + style
+    
+    create password field duplicate input in RegisterScreen + some changes
+    we pass 'password' prop to check if the input field is password field
+
+        in the input we want to hide the password input
+        we create a state
+            const [hidepassword, setHidepassword] = useState('password' prop)
+
+    inside: TextInpt +> secureTextEntry={hidepassword} this set the entry to block 
+
+    we want to toggle to show or hide password
+        we add 2nd icon component into Input field
+        add onPress set to setHidepassword to opposiet hidepassword
+
+        https://icons.expo.fyi for icons
+
+    we want to change the icon to suit password changes
+        add login in the name section in new icon
+    
+    we only the eye icon to be only in the password field 
+     we set {if password &&(
+         then we implement the whole eye icon
+     )}
+=========================== END OF Input component ===============================
+
+BUTTON 
+create a BUTTON.js  19.00
+some import
+touchableOpacity,
+props to BUTTON component + styles
+
+import button.js inside RegisterScreen
+    pass attr to the props in RegisterScreen
+
+Add <Text> Already have account? sign in</Text> + styles
+
+add the rest of the input fields 
+============================================================
+
+            VALIDATION
+create a func to validate, hook the func to the Register button via onPress
+    const validate
+
+to validate the input fields we nedd state to keep track of all texts inside inputs
+    const [inputs, setInputs] = useState({
+        initial props are the input fields -> empty
+    })
+keyboardType for phone field must be number
+
+Before that: we create a func that takes input from the fields and pass them to
+the inputs state
+    const handleOnchange (takes params; text, inputfield)
+        setInputs((prevState) (spread prev + [input field] set to 'text' from input))
+
+    hook handleOnchange to the input field via onChangeText prop
+        onChangeText={(take 'text') =>call handleOnchange(text, to 'email')}
+            Repeat in other fields
+
+we want to hide keyboard when user hit the button in validate 
+   validate email:
+    if(!input.email){ // check if email is empty we throw Error
+        call handleErrors('pass message', 'input field set in inputs to show error')
+        }
+        pass error into the input fields as 
+    we want to remove error once user start typing in TextInpt
+        onFocs={() = call handleErrors(set to 'null, in 'email' field)}
+        repeat in all fields
+
+we create a state for the Error
+    const [erros, setErrors] = useState({})
+
+we create fnc that interact with the errors state
+    const handleErrors = (take in 'error' message, 'input' to show error) => {
+
+    }
+
+Back to VALIDATION
+    create a 
+    let valid = true // cos will be repeated
+        if theres error valid = false, prevent submission
+        b4 registration we check if valid = true
+    any error triggers valid = false
+
+we want to check if email is valid
+if(!input.email)
+    
+}else if(!input.email.match..){
+    error 
+}
+
+we valid the fullname field
+we want password to receive min char of 8 char
+=================================================
+
+TO REGISTER USER
+    + const RegisterUser
+    if validation is true we call the RegisterUser in validate func
+
+we create a Loader to simulate sending data to server
+    + Loader.js
+        neccessary imports
+        take in props {visible = false // to show or hide the modal}
+        in return set visible to true then show <View></View>
+            send Loader into RegisterScreen
+    Back to Loader
+        style the View
+            add Loader inside the View
+            import useWindowDimensions
+                create var wit useWindowDimensions
+        add ActivityIndicator, import it
+        add loading Text
+
+    we wanto show Loader when the Register button is clicked
+        + a state in RegisterScreen
+        const [loading, setLoading] = React.useState(false);
+        hook it to the <Loader visible={loading}
+      ---------------------------------  
+TO RegisterUser func
+    we set loading to true
+    set time for loading to 3s 3000 it will run once
+    dring the time,
+        try send data
+            to Async using 'user' as the key
+            after navigated/redirect to LoginScreen
+        else there is somem error
+
+=======================================================
+LoginScreen  it will be similar to the registration
+
+copy and pass that of registration
+    make neccessary changes 
+    remove email validation, phone validation, password lenght validation,
+
+    if valid loginUser func formally RegisterUser
+        remode all logic 
+        inside setTimeOt func
+            create func to collect data from server
+           + let userData = await AsyncStorage.getItem(pass key 'user')
+            we chech if there is data for that user in AsyncStorage
+            if(userData){
+                check if user data passed is valid
+                    convert data to object
+                    check if details are valid (email and password)
+                        set userData to device
+                         AsyncStorage.setItem('key',JSON.stringify({...userData, loggedIn: true}),)
+                         after send user to HomeScreen
+                    else: Error
+            }else{
+            Alert.alert('Error', 'User does not exist')
+         }
+
+======================================================================
+HomeScreen
++ parent View + style
++ Text + style
+
+we want to show user details
+    create func 
+        cont [userDetails, setUserDetails] stores data about user
+        const getUserDetails
+        get data from AsyncStorage + key which is store in userData
+
+        if userData exit we set it to the userDetails state 
+            setUserDetails(JSON.parse(userData)); convert details to object
+
+    we want getUserDetails to run immediately  in userDetails
+         useEffect
+             call getUserDetails
+in the Text we render the user fullname
+
+
+WE ADD THE LOG OUT func
+    we + BUTTON
+
+to log user out, we create a func
+    const logOut
+        access the AsyncStorage + key + convert data to stringify
+        spread data and set loggedIn to false
+        send user to LoginScreen
+    hook fnc to the button onPress
+
+==========================================================
+
+AUTHENTICATE USER IN App.js
+ + inital route  // to know route to send user login _> HomeScreen logOut -> LoginScreen
+    const [initialRouteName, setInitialRouteName] = useState('');
+        + func handle AUTHENTICATion
+        const authUser = async () => {
+            try
+                get userData access AsyncStorage
+                check if userData exist
+                    convert to back to object (parse)
+                    if user is userData loggedIn
+                        send user to HomeScreen
+                    else
+                        send user to LoginScreen
+                else
+                    send user to registration
+                
+            catch error
+                send user to registration page
+
+add Loader
+in NavigationContainer
+    check if initialRouteName is  the render
+    Loader 
+    else
+    <>
+    stack.navigator.....
+    </>
+we add useEffect to call authUser,
+    to run loader for 2s
