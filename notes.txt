@@ -253,3 +253,5 @@ in NavigationContainer
     </>
 we add useEffect to call authUser,
     to run loader for 2s
+
+pass initialRouteName into stack.navigator
